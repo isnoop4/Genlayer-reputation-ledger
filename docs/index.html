@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ReputationLedger — On-chain trust for GenLayer</title>
+<meta name="description" content="Time-decaying, source-weighted on-chain reputation with AI trust summaries, built as a GenLayer Intelligent Contract.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07080d;--panel:#10121b;--panel2:#161926;--line:#242840;--text:#e8eaf6;--mute:#8b90ad;--accent:#7c5cff;--accent2:#22d3ee;--good:#34d399;--warn:#fbbf24;--bad:#f87171;--r:16px}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font:15px/1.55 Inter,system-ui,sans-serif;min-height:100vh;
+background-image:radial-gradient(900px 500px at 85% -10%,#7c5cff33,transparent),radial-gradient(700px 400px at -10% 10%,#22d3ee22,transparent);background-repeat:no-repeat}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.logo{font:700 20px 'Space Grotesk';display:flex;gap:10px;align-items:center}
+.logo i{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-style:normal;font-size:16px}
+button,.btn{font:600 14px Inter;border:0;border-radius:11px;padding:10px 16px;cursor:pointer;color:#fff;background:linear-gradient(135deg,var(--accent),#5b8cff);transition:.15s}
+button:hover{filter:brightness(1.12);transform:translateY(-1px)}
+button.ghost{background:var(--panel2);border:1px solid var(--line);color:var(--text)}
+button:disabled{opacity:.5;cursor:wait}
+.hero{padding:44px 0 26px;text-align:center}
+.pill{display:inline-block;padding:5px 12px;border:1px solid var(--line);border-radius:99px;color:var(--mute);font-size:12.5px;background:#ffffff08}
+h1{font:700 clamp(34px,6vw,60px)/1.05 'Space Grotesk';margin:18px 0 14px;letter-spacing:-.02em}
+h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--mute);max-width:620px;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:30px 0}
+.stat,.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.stat b{display:block;font:700 28px 'Space Grotesk'}
+.stat small{color:var(--mute)}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-bottom:16px}
+h2{font:700 18px 'Space Grotesk';margin-bottom:12px}
+.row{display:flex;gap:8px}
+input,select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;color:var(--text);font:14px 'JetBrains Mono',monospace;outline:0}
+input:focus,select:focus{border-color:var(--accent)}
+.gauge{display:flex;align-items:center;gap:22px;margin-top:18px;flex-wrap:wrap}
+.ring{--p:0;width:130px;height:130px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c,var(--accent)) calc(var(--p)*1%),var(--panel2) 0)}
+.ring div{width:104px;height:104px;border-radius:50%;background:var(--panel);display:grid;place-items:center;text-align:center}
+.ring b{font:700 30px 'Space Grotesk';line-height:1}
+.ring small{color:var(--mute);font-size:11px}
+.tier{display:inline-block;padding:4px 12px;border-radius:99px;font:700 12px Inter;letter-spacing:.06em}
+.UNRATED{background:#8b90ad22;color:var(--mute)}.RISKY{background:#f8717122;color:var(--bad)}.NEUTRAL{background:#fbbf2422;color:var(--warn)}.TRUSTED{background:#34d39922;color:var(--good)}.ELITE{background:#7c5cff33;color:#b4a1ff}
+.kv{color:var(--mute);font-size:13px;margin-top:8px}.kv b{color:var(--text);font-weight:500}
+.ai{margin-top:16px;padding:14px;border-radius:12px;background:linear-gradient(135deg,#7c5cff14,#22d3ee10);border:1px solid #7c5cff44;font-size:14px}
+.ai small{display:block;color:var(--accent2);font-weight:600;margin-bottom:4px;letter-spacing:.05em}
+.list{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow:auto}
+.item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;background:var(--panel2);border-radius:11px;font-size:13px;cursor:pointer}
+.item code,.mono{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--mute)}
+.pos{color:var(--good);font-weight:600}.neg{color:var(--bad);font-weight:600}
+.empty{color:var(--mute);text-align:center;padding:18px}
+.admin{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.admin .card>*+*{margin-top:9px}
+.note{color:var(--mute);font-size:12.5px}
+.status{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);padding:11px 18px;border-radius:12px;font-size:13.5px;opacity:0;pointer-events:none;transition:.2s;max-width:90vw;z-index:9}
+.status.show{opacity:1}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:34px 0 10px}
+.how .card b{font:700 15px 'Space Grotesk';display:block;margin:6px 0 4px}.how .card p{color:var(--mute);font-size:13.5px}
+footer{color:var(--mute);font-size:13px;text-align:center;padding:36px 0}
+footer a{color:var(--accent2);text-decoration:none}
+@media(max-width:820px){.stats{grid-template-columns:repeat(2,1fr)}.grid,.admin,.how{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <div class="logo"><i>🛡️</i>ReputationLedger</div>
+  <div class="row"><button class="ghost" id="cfgBtn">⚙︎ Contract</button><button id="connectBtn">Connect wallet</button></div>
+</nav>
+
+<section class="hero">
+  <span class="pill" id="modePill">Demo mode — set a contract address to go live</span>
+  <h1>Reputation that <span>fades</span>,<br>weighted by who vouches.</h1>
+  <p>An on-chain trust ledger on GenLayer. Registered sources report outcomes, scores decay with a half-life, and validators' LLMs write a plain-English trust summary.</p>
+</section>
+
+<section class="stats">
+  <div class="stat"><b id="sSubjects">–</b><small>Subjects rated</small></div>
+  <div class="stat"><b id="sEvents">–</b><small>Outcomes recorded</small></div>
+  <div class="stat"><b id="sSources">–</b><small>Trusted sources</small></div>
+  <div class="stat"><b id="sHalf">–</b><small>Half-life (days)</small></div>
+</section>
+
+<section class="grid">
+  <div class="card">
+    <h2>Look up an address</h2>
+    <div class="row"><input id="addr" placeholder="0x… subject address"><button id="lookupBtn">Check</button></div>
+    <div id="result"><div class="empty">Pick an address from the leaderboard or paste one above.</div></div>
+  </div>
+  <div class="card">
+    <h2>Leaderboard</h2>
+    <div class="list" id="board"></div>
+  </div>
+</section>
+
+<section class="grid">
+  <div class="card"><h2>History</h2><div class="list" id="history"><div class="empty">Select a subject to see its events.</div></div></div>
+  <div class="card"><h2>Trusted sources</h2><div class="list" id="sources"></div></div>
+</section>
+
+<section class="admin">
+  <div class="card">
+    <h2>Report an outcome</h2>
+    <p class="note">Only registered sources can call this.</p>
+    <input id="rSubject" placeholder="Subject 0x…">
+    <select id="rKind"></select>
+    <input id="rDelta" type="number" min="-100" max="100" placeholder="Delta (-100…100)">
+    <input id="rCtx" placeholder="context_hash (unique per case)">
+    <button id="recordBtn">Submit outcome</button>
+  </div>
+  <div class="card">
+    <h2>Owner tools</h2>
+    <input id="oSource" placeholder="Source 0x…">
+    <input id="oLabel" placeholder="Label (e.g. Escrow v1)">
+    <input id="oWeight" type="number" min="0" max="100" placeholder="Weight (0–100)">
+    <div class="row"><button id="regBtn">Register / update</button><button class="ghost" id="revBtn">Revoke</button></div>
+    <button class="ghost" id="assessBtn">✨ AI assess selected subject</button>
+  </div>
+</section>
+
+<section class="how">
+  <div class="card">①<b>Sources, not self-claims</b><p>Only owner-approved contracts can report. A source can't rate itself and can't replay the same case.</p></div>
+  <div class="card">②<b>Weighted &amp; decaying</b><p>Impact = delta × source weight. Scores halve every half-life, so recent behaviour dominates.</p></div>
+  <div class="card">③<b>AI trust summary</b><p>Validators run an LLM over recent history and agree on a conclusion via comparative equivalence.</p></div>
+</section>
+
+<footer><a href="https://explorer-studio.genlayer.com/address/0x94853F7De40e60431424E6a58E91B8d24E248B3B" target="_blank" rel="noopener">View contract on explorer ↗</a><br>Built on <a href="https://genlayer.com" target="_blank" rel="noopener">GenLayer</a> · Intelligent Contract + genlayer-js</footer>
+</div>
+<div class="status" id="status"></div>
+
+<script type="module">
+// ======= CONFIG: put your deployed contract address here (or use the ⚙︎ button) =======
+const DEFAULT_ADDRESS = "0x94853F7De40e60431424E6a58E91B8d24E248B3B";
+// ======================================================================================
+
+const KINDS=["DISPUTE_WIN","DISPUTE_LOSS","ESCROW_COMPLETED","ESCROW_FAILED","VERIFICATION_PASSED","VERIFICATION_FAILED"];
+const SCALE=1000, $=id=>document.getElementById(id);
+const short=a=>a?a.slice(0,6)+"…"+a.slice(-4):"";
+const ok=a=>/^0x[0-9a-fA-F]{40}$/.test((a||"").trim());
+const store={get:k=>{try{return localStorage.getItem(k)}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch{}}};
+
+let contract=DEFAULT_ADDRESS||store.get("rl_addr")||"", account=null, client=null, selected=null, gl=null;
+KINDS.forEach(k=>$("rKind").add(new Option(k,k)));
+
+function toast(m,ms=3200){const s=$("status");s.textContent=m;s.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>s.classList.remove("show"),ms)}
+function plain(x){if(x instanceof Map)return Object.fromEntries([...x].map(([k,v])=>[k,plain(v)]));if(Array.isArray(x))return x.map(plain);if(typeof x==="bigint")return Number(x);return x}
+
+// ---------- demo backend (used when no contract address is set) ----------
+const demo=(()=>{
+  const now=Math.floor(Date.now()/1000),d=86400,A=n=>"0x"+n.toString(16).padStart(40,"a");
+  const src=[{address:A(1),label:"Escrow v1",weight:80,revoked:false},{address:A(2),label:"Dispute Court",weight:95,revoked:false},{address:A(3),label:"Verifier",weight:60,revoked:false}];
+  const subj={[A(11)]:[["ESCROW_COMPLETED",40,1,12],["DISPUTE_WIN",60,2,30],["VERIFICATION_PASSED",50,3,70],["ESCROW_COMPLETED",70,1,5]],
+              [A(12)]:[["ESCROW_FAILED",-60,1,10],["DISPUTE_LOSS",-50,2,25]],
+              [A(13)]:[["VERIFICATION_PASSED",20,3,200],["ESCROW_COMPLETED",10,1,150]]};
+  const ai={[A(11)]:"Consistently reliable: multiple completed escrows and a won dispute with recent activity.",[A(12)]:"Recent failures and a lost dispute suggest elevated risk."};
+  const ev={};let id=0;
+  for(const s in subj)ev[s]=subj[s].map(([kind,delta,si,ago])=>({id:id++,source:src[si-1].address,subject:s,kind,delta,weight:src[si-1].weight,effective:delta*src[si-1].weight*10,context_hash:"demo-"+id,timestamp:now-ago*d}));
+  const HL=180*d;
+  const dec=(v,e)=>{if(!v||e<=0)return v;const m=Math.abs(v),h=Math.floor(e/HL);if(h>=64)return 0;return Math.sign(v)*Math.floor(((m>>h)*(2*HL-e%HL))/(2*HL))};
+  const score=a=>{let raw=0,last=0;for(const e of ev[a]||[]){raw=dec(raw,e.timestamp-last)+e.effective;last=e.timestamp}return{stored_scaled:raw,last_update:last,events:(ev[a]||[]).length,half_life:HL}};
+  return{counts:()=>({subjects:Object.keys(ev).length,events:id,sources:src.length,half_life:HL}),
+    subjects:()=>Object.keys(ev),score,history:a=>[...(ev[a]||[])].reverse(),sources:()=>src,ai:a=>ai[a]||""};
+})();
+
+// ---------- chain access ----------
+async function loadSdk(){
+  if(gl)return gl;
+  const [m,c]=await Promise.all([import("https://esm.sh/genlayer-js"),import("https://esm.sh/genlayer-js/chains")]);
+  gl={createClient:m.createClient,chain:c.studionet};return gl;
+}
+async function mkClient(){
+  const {createClient,chain}=await loadSdk();
+  client=createClient({chain,...(account?{account}:{})});
+  return client;
+}
+async function read(fn,args=[]){
+  if(!client)await mkClient();
+  return plain(await client.readContract({address:contract,functionName:fn,args}));
+}
+async function write(fn,args=[]){
+  if(!contract)return toast("Set a contract address first (⚙︎ Contract).");
+  if(!account)return toast("Connect your wallet first.");
+  try{
+    toast("Waiting for wallet signature…",8000);
+    const hash=await client.writeContract({address:contract,functionName:fn,args,value:0n});
+    toast("Transaction sent — waiting for consensus…",60000);
+    await client.waitForTransactionReceipt({hash,status:"ACCEPTED",retries:60,interval:3000});
+    toast("Accepted ✅");await refresh();if(selected)lookup(selected);
+  }catch(e){toast("Failed: "+(e.shortMessage||e.message||e).toString().slice(0,140),6000)}
+}
+
+// ---------- decay (client-side so views are always "live") ----------
+function liveScore(s){
+  const now=Math.floor(Date.now()/1000);let v=s.stored_scaled,e=now-s.last_update;
+  if(s.last_update&&e>0&&v){const hl=s.half_life,m=Math.abs(v),h=Math.floor(e/hl);v=h>=64?0:Math.sign(v)*Math.floor(((m>>h)*(2*hl-e%hl))/(2*hl))}
+  return Math.sign(v)*Math.round(Math.abs(v)/SCALE);
+}
+const tierOf=(sc,n)=>!n?"UNRATED":sc<-20?"RISKY":sc<20?"NEUTRAL":sc<100?"TRUSTED":"ELITE";
+const colorOf={UNRATED:"#8b90ad",RISKY:"#f87171",NEUTRAL:"#fbbf24",TRUSTED:"#34d399",ELITE:"#a78bfa"};
+
+// ---------- UI ----------
+function setMode(){
+  $("modePill").textContent=contract?`Live · studionet · ${short(contract)}`:"Demo mode — set a contract address to go live";
+  $("modePill").style.color=contract?"#34d399":"";
+}
+async function refresh(){
+  setMode();
+  try{
+    const c=contract?await read("get_counts"):demo.counts();
+    $("sSubjects").textContent=c.subjects??"–";$("sEvents").textContent=c.events;$("sSources").textContent=c.sources;$("sHalf").textContent=Math.round(c.half_life/86400);
+    const subs=contract?await read("get_subjects",[0,20]):demo.subjects();
+    const rows=await Promise.all(subs.map(async a=>{const s=contract?await read("get_score",[a]):{address:a,...demo.score(a)};return{a,sc:liveScore(s),n:s.events}}));
+    rows.sort((x,y)=>y.sc-x.sc);
+    $("board").innerHTML=rows.length?rows.map(r=>`<div class="item" data-a="${r.a}"><code>${short(r.a)}</code><span class="tier ${tierOf(r.sc,r.n)}">${tierOf(r.sc,r.n)}</span><span class="${r.sc>=0?"pos":"neg"}">${r.sc}</span></div>`).join(""):'<div class="empty">No subjects yet.</div>';
+    const src=contract?await read("get_sources"):demo.sources();
+    $("sources").innerHTML=src.length?src.map(s=>`<div class="item"><span>${esc(s.label)}<br><code>${short(s.address)}</code></span><span class="${s.revoked?"neg":"pos"}">${s.revoked?"revoked":"weight "+s.weight}</span></div>`).join(""):'<div class="empty">No sources registered.</div>';
+  }catch(e){toast("Read failed: "+(e.message||e).toString().slice(0,120),5000)}
+}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+async function lookup(a){
+  a=(a||"").trim();if(!ok(a))return toast("Enter a valid 0x address.");
+  selected=a.toLowerCase();$("addr").value=selected;
+  try{
+    const s=contract?await read("get_score",[selected]):{address:selected,...demo.score(selected)};
+    const sc=liveScore(s),t=tierOf(sc,s.events),p=Math.max(0,Math.min(100,(sc+100)/2));
+    const ai=contract?await read("get_assessment",[selected]).catch(()=>""):demo.ai(selected);
+    $("result").innerHTML=`<div class="gauge"><div class="ring" style="--p:${p};--c:${colorOf[t]}"><div><span><b>${sc}</b><br><small>score</small></span></div></div>
+      <div><span class="tier ${t}">${t}</span><div class="kv">Events: <b>${s.events}</b></div><div class="kv">Last activity: <b>${s.last_update?new Date(s.last_update*1000).toLocaleDateString():"—"}</b></div><div class="kv">Decay applied live · half-life <b>${Math.round(s.half_life/86400)}d</b></div></div></div>
+      ${ai?`<div class="ai"><small>AI TRUST SUMMARY</small>${esc(ai)}</div>`:""}`;
+    const h=contract?await read("get_history",[selected,0,20]):demo.history(selected);
+    $("history").innerHTML=h.length?h.map(e=>`<div class="item" style="cursor:default"><span>${esc(e.kind)}<br><code>${short(e.source)} · ${new Date(e.timestamp*1000).toLocaleDateString()}</code></span><span class="${e.effective>=0?"pos":"neg"}">${e.effective>=0?"+":""}${(e.effective/SCALE).toFixed(1)}</span></div>`).join(""):'<div class="empty">No events.</div>';
+  }catch(e){toast("Lookup failed: "+(e.message||e).toString().slice(0,120),5000)}
+}
+
+$("board").onclick=e=>{const i=e.target.closest(".item");if(i)lookup(i.dataset.a)};
+$("lookupBtn").onclick=()=>lookup($("addr").value);
+$("addr").onkeydown=e=>{if(e.key==="Enter")lookup($("addr").value)};
+$("cfgBtn").onclick=async()=>{
+  const v=prompt("GenLayer contract address (studionet). Leave empty for demo mode:",contract||"");
+  if(v===null)return;if(v&&!ok(v))return toast("Invalid address.");
+  contract=v.trim();store.set("rl_addr",contract);await refresh();
+};
+$("connectBtn").onclick=async()=>{
+  if(!window.ethereum)return toast("No wallet found — install MetaMask.");
+  try{
+    const [a]=await window.ethereum.request({method:"eth_requestAccounts"});account=a;
+    await mkClient();try{await client.connect("studionet")}catch{}
+    $("connectBtn").textContent=short(a);toast("Wallet connected.");
+  }catch(e){toast("Connection rejected.")}
+};
+$("recordBtn").onclick=()=>{
+  const s=$("rSubject").value.trim(),d=parseInt($("rDelta").value,10),c=$("rCtx").value.trim();
+  if(!ok(s)||isNaN(d)||d<-100||d>100||!c)return toast("Fill subject, delta (-100…100) and context hash.");
+  write("record_outcome",[s,$("rKind").value,d,c]);
+};
+$("regBtn").onclick=()=>{
+  const s=$("oSource").value.trim(),l=$("oLabel").value.trim(),w=parseInt($("oWeight").value,10);
+  if(!ok(s)||isNaN(w)||w<0||w>100)return toast("Source address and weight 0–100 required.");
+  l?write("register_source",[s,l,w]):write("update_weight",[s,w]);
+};
+$("revBtn").onclick=()=>{const s=$("oSource").value.trim();ok(s)?write("revoke_source",[s]):toast("Enter the source address.")};
+$("assessBtn").onclick=()=>selected?write("assess",[selected]):toast("Select a subject first.");
+
+refresh();
+</script>
+</body>
+</html>
