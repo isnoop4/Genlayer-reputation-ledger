@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ReputationLedger — On-chain trust for GenLayer</title>
-<meta name="description" content="Time-decaying, source-weighted on-chain reputation with AI trust summaries, built as a GenLayer Intelligent Contract.">
+<title>ReputationLedger — Evidence-verified on-chain trust for GenLayer</title>
+<meta name="description" content="Evidence-verified, time-decaying on-chain reputation with open challenges, built as a GenLayer Intelligent Contract.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +27,7 @@ button:disabled{opacity:.5;cursor:wait}
 .pill{display:inline-block;padding:5px 12px;border:1px solid var(--line);border-radius:99px;color:var(--mute);font-size:12.5px;background:#ffffff08}
 h1{font:700 clamp(34px,6vw,60px)/1.05 'Space Grotesk';margin:18px 0 14px;letter-spacing:-.02em}
 h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero p{color:var(--mute);max-width:620px;margin:0 auto}
+.hero p{color:var(--mute);max-width:640px;margin:0 auto}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:30px 0}
 .stat,.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
 .stat b{display:block;font:700 28px 'Space Grotesk'}
@@ -35,8 +35,8 @@ h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-b
 .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-bottom:16px}
 h2{font:700 18px 'Space Grotesk';margin-bottom:12px}
 .row{display:flex;gap:8px}
-input,select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;color:var(--text);font:14px 'JetBrains Mono',monospace;outline:0}
-input:focus,select:focus{border-color:var(--accent)}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;color:var(--text);font:14px 'JetBrains Mono',monospace;outline:0}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .gauge{display:flex;align-items:center;gap:22px;margin-top:18px;flex-wrap:wrap}
 .ring{--p:0;width:130px;height:130px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c,var(--accent)) calc(var(--p)*1%),var(--panel2) 0)}
 .ring div{width:104px;height:104px;border-radius:50%;background:var(--panel);display:grid;place-items:center;text-align:center}
@@ -47,12 +47,17 @@ input:focus,select:focus{border-color:var(--accent)}
 .kv{color:var(--mute);font-size:13px;margin-top:8px}.kv b{color:var(--text);font-weight:500}
 .ai{margin-top:16px;padding:14px;border-radius:12px;background:linear-gradient(135deg,#7c5cff14,#22d3ee10);border:1px solid #7c5cff44;font-size:14px}
 .ai small{display:block;color:var(--accent2);font-weight:600;margin-bottom:4px;letter-spacing:.05em}
-.list{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow:auto}
+.list{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow:auto}
 .item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;background:var(--panel2);border-radius:11px;font-size:13px;cursor:pointer}
 .item code,.mono{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--mute)}
+.item a{color:var(--accent2);text-decoration:none;font-size:12.5px}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font:600 11px Inter;margin-left:6px}
+.badge.rev{background:#f8717122;color:var(--bad)}
+.badge.open{background:#22d3ee22;color:var(--accent2)}
+.badge.src{background:#34d39922;color:var(--good)}
 .pos{color:var(--good);font-weight:600}.neg{color:var(--bad);font-weight:600}
 .empty{color:var(--mute);text-align:center;padding:18px}
-.admin{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.admin{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px}
 .admin .card>*+*{margin-top:9px}
 .note{color:var(--mute);font-size:12.5px}
 .status{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);padding:11px 18px;border-radius:12px;font-size:13.5px;opacity:0;pointer-events:none;transition:.2s;max-width:90vw;z-index:9}
@@ -73,14 +78,14 @@ footer a{color:var(--accent2);text-decoration:none}
 
 <section class="hero">
   <span class="pill" id="modePill">Demo mode — set a contract address to go live</span>
-  <h1>Reputation that <span>fades</span>,<br>weighted by who vouches.</h1>
-  <p>An on-chain trust ledger on GenLayer. Registered sources report outcomes, scores decay with a half-life, and validators' LLMs write a plain-English trust summary.</p>
+  <h1>Reputation that needs <span>proof</span>,<br>and can be challenged.</h1>
+  <p>An on-chain trust ledger on GenLayer. Every outcome must carry public evidence that validators verify with LLM consensus. Anyone can report, anyone can challenge, and scores decay with a half-life.</p>
 </section>
 
 <section class="stats">
   <div class="stat"><b id="sSubjects">–</b><small>Subjects rated</small></div>
-  <div class="stat"><b id="sEvents">–</b><small>Outcomes recorded</small></div>
-  <div class="stat"><b id="sSources">–</b><small>Trusted sources</small></div>
+  <div class="stat"><b id="sEvents">–</b><small>Verified outcomes</small></div>
+  <div class="stat"><b id="sSources">–</b><small>Weighted sources</small></div>
   <div class="stat"><b id="sHalf">–</b><small>Half-life (days)</small></div>
 </section>
 
@@ -98,21 +103,27 @@ footer a{color:var(--accent2);text-decoration:none}
 
 <section class="grid">
   <div class="card"><h2>History</h2><div class="list" id="history"><div class="empty">Select a subject to see its events.</div></div></div>
-  <div class="card"><h2>Trusted sources</h2><div class="list" id="sources"></div></div>
+  <div class="card"><h2>Weighted sources</h2><div class="list" id="sources"></div></div>
 </section>
 
 <section class="admin">
   <div class="card">
     <h2>Report an outcome</h2>
-    <p class="note">Only registered sources can call this.</p>
+    <p class="note">Open to everyone. Validators fetch your evidence URL and an LLM must confirm it supports the claim, otherwise nothing is recorded. Unregistered reporters carry a low default weight.</p>
     <input id="rSubject" placeholder="Subject 0x…">
     <select id="rKind"></select>
-    <input id="rDelta" type="number" min="-100" max="100" placeholder="Delta (-100…100)">
-    <input id="rCtx" placeholder="context_hash (unique per case)">
-    <button id="recordBtn">Submit outcome</button>
+    <input id="rDelta" type="number" min="-100" max="100" placeholder="Delta (positive for good outcomes, negative for bad)">
+    <input id="rClaim" maxlength="280" placeholder="Claim (what happened, max 280 chars)">
+    <input id="rUrl" placeholder="Evidence URL (https://…)">
+    <button id="recordBtn">Submit &amp; verify</button>
   </div>
   <div class="card">
-    <h2>Owner tools</h2>
+    <h2>Challenge an event</h2>
+    <p class="note">Think a recorded outcome is false? Submit different counter-evidence. If validators find the claim contradicted, the event is reversed on-chain. Click an event in History to fill its ID.</p>
+    <input id="cId" type="number" min="0" placeholder="Event ID">
+    <input id="cUrl" placeholder="Counter-evidence URL (https://…)">
+    <button id="challengeBtn">Challenge event</button>
+    <p class="note" style="margin-top:14px">Owner tools only tune source weights and half-life. The owner cannot write or edit scores.</p>
     <input id="oSource" placeholder="Source 0x…">
     <input id="oLabel" placeholder="Label (e.g. Escrow v1)">
     <input id="oWeight" type="number" min="0" max="100" placeholder="Weight (0–100)">
@@ -122,24 +133,25 @@ footer a{color:var(--accent2);text-decoration:none}
 </section>
 
 <section class="how">
-  <div class="card">①<b>Sources, not self-claims</b><p>Only owner-approved contracts can report. A source can't rate itself and can't replay the same case.</p></div>
-  <div class="card">②<b>Weighted &amp; decaying</b><p>Impact = delta × source weight. Scores halve every half-life, so recent behaviour dominates.</p></div>
-  <div class="card">③<b>AI trust summary</b><p>Validators run an LLM over recent history and agree on a conclusion via comparative equivalence.</p></div>
+  <div class="card">①<b>Evidence, not trust</b><p>Each outcome needs a public URL. Validators fetch it and reach LLM consensus on whether it supports the claim. Unsupported claims never touch the score.</p></div>
+  <div class="card">②<b>Open, with weights</b><p>Anyone can report at a low default weight; registered sources get more. Impact = delta × weight, and scores halve every half-life.</p></div>
+  <div class="card">③<b>Challenge &amp; reverse</b><p>Anyone can submit counter-evidence. If the claim is contradicted, the event is reversed on-chain. The owner has no power over scores.</p></div>
 </section>
 
-<footer><a href="https://explorer-studio.genlayer.com/address/0x94853F7De40e60431424E6a58E91B8d24E248B3B" target="_blank" rel="noopener">View contract on explorer ↗</a><br>Built on <a href="https://genlayer.com" target="_blank" rel="noopener">GenLayer</a> · Intelligent Contract + genlayer-js</footer>
+<footer><a href="https://explorer-studio.genlayer.com/address/0xA1230a1FE664FEf1c83223337d1235D96e9EfcdA" target="_blank" rel="noopener">View contract on explorer ↗</a><br>Built on <a href="https://genlayer.com" target="_blank" rel="noopener">GenLayer</a> · Intelligent Contract + genlayer-js</footer>
 </div>
 <div class="status" id="status"></div>
 
 <script type="module">
-// ======= CONFIG: put your deployed contract address here (or use the ⚙︎ button) =======
-const DEFAULT_ADDRESS = "0x94853F7De40e60431424E6a58E91B8d24E248B3B";
-// ======================================================================================
+// ======= CONFIG: deployed contract address (v2, evidence-verified) =======
+const DEFAULT_ADDRESS = "0xA1230a1FE664FEf1c83223337d1235D96e9EfcdA";
+// =========================================================================
 
 const KINDS=["DISPUTE_WIN","DISPUTE_LOSS","ESCROW_COMPLETED","ESCROW_FAILED","VERIFICATION_PASSED","VERIFICATION_FAILED"];
 const SCALE=1000, $=id=>document.getElementById(id);
 const short=a=>a?a.slice(0,6)+"…"+a.slice(-4):"";
 const ok=a=>/^0x[0-9a-fA-F]{40}$/.test((a||"").trim());
+const okUrl=u=>/^https:\/\/\S{3,290}$/.test((u||"").trim());
 const store={get:k=>{try{return localStorage.getItem(k)}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch{}}};
 
 let contract=DEFAULT_ADDRESS||store.get("rl_addr")||"", account=null, client=null, selected=null, gl=null;
@@ -147,6 +159,7 @@ KINDS.forEach(k=>$("rKind").add(new Option(k,k)));
 
 function toast(m,ms=3200){const s=$("status");s.textContent=m;s.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>s.classList.remove("show"),ms)}
 function plain(x){if(x instanceof Map)return Object.fromEntries([...x].map(([k,v])=>[k,plain(v)]));if(Array.isArray(x))return x.map(plain);if(typeof x==="bigint")return Number(x);return x}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 // ---------- demo backend (used when no contract address is set) ----------
 const demo=(()=>{
@@ -157,7 +170,7 @@ const demo=(()=>{
               [A(13)]:[["VERIFICATION_PASSED",20,3,200],["ESCROW_COMPLETED",10,1,150]]};
   const ai={[A(11)]:"Consistently reliable: multiple completed escrows and a won dispute with recent activity.",[A(12)]:"Recent failures and a lost dispute suggest elevated risk."};
   const ev={};let id=0;
-  for(const s in subj)ev[s]=subj[s].map(([kind,delta,si,ago])=>({id:id++,source:src[si-1].address,subject:s,kind,delta,weight:src[si-1].weight,effective:delta*src[si-1].weight*10,context_hash:"demo-"+id,timestamp:now-ago*d}));
+  for(const s in subj)ev[s]=subj[s].map(([kind,delta,si,ago])=>({id:id++,source:src[si-1].address,reporter_type:"SOURCE",subject:s,kind,delta,weight:src[si-1].weight,effective:delta*src[si-1].weight*10,claim:"Demo outcome",evidence_url:"https://example.com/demo",reversed:false,timestamp:now-ago*d}));
   const HL=180*d;
   const dec=(v,e)=>{if(!v||e<=0)return v;const m=Math.abs(v),h=Math.floor(e/HL);if(h>=64)return 0;return Math.sign(v)*Math.floor(((m>>h)*(2*HL-e%HL))/(2*HL))};
   const score=a=>{let raw=0,last=0;for(const e of ev[a]||[]){raw=dec(raw,e.timestamp-last)+e.effective;last=e.timestamp}return{stored_scaled:raw,last_update:last,events:(ev[a]||[]).length,half_life:HL}};
@@ -186,9 +199,12 @@ async function write(fn,args=[]){
   try{
     toast("Waiting for wallet signature…",8000);
     const hash=await client.writeContract({address:contract,functionName:fn,args,value:0n});
-    toast("Transaction sent — waiting for consensus…",60000);
-    await client.waitForTransactionReceipt({hash,status:"ACCEPTED",retries:60,interval:3000});
-    toast("Accepted ✅");await refresh();if(selected)lookup(selected);
+    toast("Transaction sent — validators are verifying…",90000);
+    const rc=await client.waitForTransactionReceipt({hash,status:"ACCEPTED",retries:80,interval:3000});
+    const res=String(rc?.txExecutionResultName||rc?.result_name||"");
+    if(/ERROR/i.test(res))toast("Rejected by contract (e.g. evidence not verified). Check the explorer for details.",7000);
+    else toast("Accepted ✅");
+    await refresh();if(selected)lookup(selected);
   }catch(e){toast("Failed: "+(e.shortMessage||e.message||e).toString().slice(0,140),6000)}
 }
 
@@ -216,10 +232,9 @@ async function refresh(){
     rows.sort((x,y)=>y.sc-x.sc);
     $("board").innerHTML=rows.length?rows.map(r=>`<div class="item" data-a="${r.a}"><code>${short(r.a)}</code><span class="tier ${tierOf(r.sc,r.n)}">${tierOf(r.sc,r.n)}</span><span class="${r.sc>=0?"pos":"neg"}">${r.sc}</span></div>`).join(""):'<div class="empty">No subjects yet.</div>';
     const src=contract?await read("get_sources"):demo.sources();
-    $("sources").innerHTML=src.length?src.map(s=>`<div class="item"><span>${esc(s.label)}<br><code>${short(s.address)}</code></span><span class="${s.revoked?"neg":"pos"}">${s.revoked?"revoked":"weight "+s.weight}</span></div>`).join(""):'<div class="empty">No sources registered.</div>';
+    $("sources").innerHTML=src.length?src.map(s=>`<div class="item" style="cursor:default"><span>${esc(s.label)}<br><code>${short(s.address)}</code></span><span class="${s.revoked?"neg":"pos"}">${s.revoked?"revoked":"weight "+s.weight}</span></div>`).join(""):'<div class="empty">No weighted sources yet. Anyone can still report at the default weight.</div>';
   }catch(e){toast("Read failed: "+(e.message||e).toString().slice(0,120),5000)}
 }
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 async function lookup(a){
   a=(a||"").trim();if(!ok(a))return toast("Enter a valid 0x address.");
@@ -232,11 +247,16 @@ async function lookup(a){
       <div><span class="tier ${t}">${t}</span><div class="kv">Events: <b>${s.events}</b></div><div class="kv">Last activity: <b>${s.last_update?new Date(s.last_update*1000).toLocaleDateString():"—"}</b></div><div class="kv">Decay applied live · half-life <b>${Math.round(s.half_life/86400)}d</b></div></div></div>
       ${ai?`<div class="ai"><small>AI TRUST SUMMARY</small>${esc(ai)}</div>`:""}`;
     const h=contract?await read("get_history",[selected,0,20]):demo.history(selected);
-    $("history").innerHTML=h.length?h.map(e=>`<div class="item" style="cursor:default"><span>${esc(e.kind)}<br><code>${short(e.source)} · ${new Date(e.timestamp*1000).toLocaleDateString()}</code></span><span class="${e.effective>=0?"pos":"neg"}">${e.effective>=0?"+":""}${(e.effective/SCALE).toFixed(1)}</span></div>`).join(""):'<div class="empty">No events.</div>';
+    $("history").innerHTML=h.length?h.map(e=>{
+      const link=okUrl(e.evidence_url)?` · <a href="${esc(e.evidence_url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">evidence ↗</a>`:"";
+      const rb=e.reversed?'<span class="badge rev">REVERSED</span>':"";
+      const tb=e.reporter_type==="SOURCE"?'<span class="badge src">SOURCE</span>':'<span class="badge open">OPEN</span>';
+      return `<div class="item" data-id="${e.id}" title="Click to fill the challenge form"><span>#${e.id} ${esc(e.kind)}${tb}${rb}<br><code>${short(e.source)} · ${new Date(e.timestamp*1000).toLocaleDateString()}</code>${link}<br><span class="note">${esc(e.claim||"")}</span></span><span class="${e.effective>=0?"pos":"neg"}" style="${e.reversed?"text-decoration:line-through;opacity:.6":""}">${e.effective>=0?"+":""}${(e.effective/SCALE).toFixed(1)}</span></div>`}).join(""):'<div class="empty">No events.</div>';
   }catch(e){toast("Lookup failed: "+(e.message||e).toString().slice(0,120),5000)}
 }
 
 $("board").onclick=e=>{const i=e.target.closest(".item");if(i)lookup(i.dataset.a)};
+$("history").onclick=e=>{const i=e.target.closest(".item");if(i&&i.dataset.id!==undefined){$("cId").value=i.dataset.id;$("cUrl").focus();toast("Event #"+i.dataset.id+" selected for challenge.")}};
 $("lookupBtn").onclick=()=>lookup($("addr").value);
 $("addr").onkeydown=e=>{if(e.key==="Enter")lookup($("addr").value)};
 $("cfgBtn").onclick=async()=>{
@@ -253,9 +273,17 @@ $("connectBtn").onclick=async()=>{
   }catch(e){toast("Connection rejected.")}
 };
 $("recordBtn").onclick=()=>{
-  const s=$("rSubject").value.trim(),d=parseInt($("rDelta").value,10),c=$("rCtx").value.trim();
-  if(!ok(s)||isNaN(d)||d<-100||d>100||!c)return toast("Fill subject, delta (-100…100) and context hash.");
-  write("record_outcome",[s,$("rKind").value,d,c]);
+  const s=$("rSubject").value.trim(),d=parseInt($("rDelta").value,10),c=$("rClaim").value.trim(),u=$("rUrl").value.trim();
+  if(!ok(s)||isNaN(d)||d===0||d<-100||d>100)return toast("Valid subject and a non-zero delta (-100…100) required.");
+  if(!c||c.length>280)return toast("Claim required (max 280 chars).");
+  if(!okUrl(u))return toast("Evidence URL must start with https://");
+  write("record_outcome",[s,$("rKind").value,d,c,u]);
+};
+$("challengeBtn").onclick=()=>{
+  const id=parseInt($("cId").value,10),u=$("cUrl").value.trim();
+  if(isNaN(id)||id<0)return toast("Enter a valid event ID.");
+  if(!okUrl(u))return toast("Counter-evidence URL must start with https://");
+  write("challenge_event",[id,u]);
 };
 $("regBtn").onclick=()=>{
   const s=$("oSource").value.trim(),l=$("oLabel").value.trim(),w=parseInt($("oWeight").value,10);
